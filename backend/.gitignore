@@ -1,0 +1,16 @@
+# Secret and environment files
+.env
+*.key
+*.pem
+config/secrets/*
+# Node.js dependencies
+node_modules/
+# Build directories
+dist/   
+build/
+# Logs
+logs/   
+*.log
+# Temporary files
+    .vscode/
+    
