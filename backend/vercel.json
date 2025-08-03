@@ -1,13 +1,13 @@
 {
   "builds": [
     {
-      "src": "public/index.php",
-      "use": "@vercel/php"
+      "src": "index.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "index.js",
       "dest": "/public/$1"
     }
   ]
