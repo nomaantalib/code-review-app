@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
       return res.status(400).send("Prompt is required");
     }
     const response = await generateContent({ prompt: code });
-    res.send(response);
+    res.json({ review: response });
   } catch (error) {
     console.error("Error in AI controller:", error);
     res.status(500).send("Internal Server Error");

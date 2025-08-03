@@ -1,0 +1,19 @@
+.typewriter {
+    font-family: 'Courier New', Courier, monospace;
+    white-space: pre-wrap;
+    border-right: 2px solid black;
+    animation: blink-caret 0.7s step-end infinite;
+    display: inline-block;
+}
+
+@keyframes blink-caret {
+
+    from,
+    to {
+        border-color: transparent;
+    }
+
+    50% {
+        border-color: black;
+    }
+}

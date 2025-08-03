@@ -9,7 +9,7 @@ const Signup = ({ setUser }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +17,7 @@ const Signup = ({ setUser }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
