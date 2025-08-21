@@ -31,6 +31,7 @@ function App() {
   const [animatedReview, setAnimatedReview] = useState("");
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -38,12 +39,20 @@ function App() {
       axios
         .get(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` },
+          timeout: 5000 // 5 second timeout
         })
-        .then((res) => setUser(res.data))
-        .catch(() => {
+        .then((res) => {
+          setUser(res.data);
+          setAuthLoading(false);
+        })
+        .catch((error) => {
+          console.error("Auth check failed:", error);
           localStorage.removeItem("token");
           setUser(null);
+          setAuthLoading(false);
         });
+    } else {
+      setAuthLoading(false);
     }
   }, []);
 
@@ -98,6 +107,15 @@ function App() {
     } finally {
       setLoading(false);
     }
+  }
+
+  // Show loading indicator while checking authentication
+  if (authLoading) {
+    return (
+      <div className="auth-loading">
+        <span className="spinner" /> Checking authentication...
+      </div>
+    );
   }
 
   return (
