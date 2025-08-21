@@ -13,16 +13,16 @@ const Navbar = ({ user, setUser }) => {
   return (
     <nav className="navbar">
       <div className="nav-brand">
-        <Link to="/">CodeReviewAI</Link>
+        <Link to="/"> CodeReviewAI</Link>
       </div>
       <ul className="nav-links">
         {user ? (
           <>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/" >Home</Link>
             </li>
             <li className="nav-user">
-              Welcome, {user.name}!
+              Welcome, {user.name}! ({user.credits} credits)
             </li>
             <li>
               <button onClick={handleLogout} className="nav-button">

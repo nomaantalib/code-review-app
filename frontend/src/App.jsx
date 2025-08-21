@@ -49,14 +49,42 @@ function App() {
 
   async function reviewCode() {
     try {
+      // Check if user has credits
+      if (user.credits < 1) {
+        setReview("Error: You don't have enough credits to perform a code review.");
+        return;
+      }
+
       setLoading(true);
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/ai/get-review`,
-        { code: code }
+        { code: code },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
       );
       setReview(response.data.review);
+      
+      // Update user credits in state
+      if (response.data.creditsRemaining !== undefined) {
+        setUser(prevUser => ({
+          ...prevUser,
+          credits: response.data.creditsRemaining
+        }));
+      }
     } catch (error) {
-      setReview("Error: Unable to get review.");
+      if (error.response?.status === 402) {
+        setReview(`Error: ${error.response.data.message}`);
+        // Update user credits to 0 if insufficient credits error
+        setUser(prevUser => ({
+          ...prevUser,
+          credits: 0
+        }));
+      } else {
+        setReview("Error: Unable to get review.");
+      }
       console.error(error);
     } finally {
       setLoading(false);
@@ -95,8 +123,11 @@ function App() {
                       }}
                     />
                   </div>
-                  <div onClick={reviewCode} className="review">
-                    {loading ? <span className="spinner" /> : "Review"}
+                  <div className="credits-section">
+                    <span className="credits-count">Credits: {user.credits}</span>
+                    <div onClick={reviewCode} className="review" disabled={user.credits < 1}>
+                      {loading ? <span className="spinner" /> : "Review"}
+                    </div>
                   </div>
                 </div>
 
@@ -110,7 +141,7 @@ function App() {
                       <h2>Code Review</h2>
                       <Typewriter
                         text={review}
-                        speed={30}
+                        speed={50}
                         setDisplayedText={setAnimatedReview}
                       />
                       <Markdown rehypePlugins={[rehypeHighlight]}>
