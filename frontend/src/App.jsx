@@ -49,10 +49,19 @@ function App() {
 
   async function reviewCode() {
     try {
-      // Check if user has credits
-      if (user.credits < 1) {
-        setReview("Error: You don't have enough credits to perform a code review.");
-        return;
+      const defaultCode = ` function sum() {
+  return 1 + 1
+}`;
+      
+      // Check if code is the default code - don't charge credits for this
+      const isDefaultCode = code.trim() === defaultCode.trim();
+      
+      if (!isDefaultCode) {
+        // Check if user has credits only for non-default code
+        if (user.credits < 1) {
+          setReview("Error: You don't have enough credits to perform a code review.");
+          return;
+        }
       }
 
       setLoading(true);
@@ -67,8 +76,8 @@ function App() {
       );
       setReview(response.data.review);
       
-      // Update user credits in state
-      if (response.data.creditsRemaining !== undefined) {
+      // Update user credits in state only if not default code and credits were deducted
+      if (!isDefaultCode && response.data.creditsRemaining !== undefined) {
         setUser(prevUser => ({
           ...prevUser,
           credits: response.data.creditsRemaining
