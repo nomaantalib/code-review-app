@@ -1,88 +1,167 @@
-# CodeReviewAI - Authentication Fix
+# CodeReviewAI - AI-Powered Code Review Platform
 
-This document explains the fixes implemented to resolve the "An error occurred. Please try again" error during login or signup.
+CodeReviewAI is a full-stack web application that provides AI-powered code reviews for developers. The platform features user authentication, credit-based review system, and a typewriter effect for displaying review results.
 
-## Issues Identified and Fixed
+## Features
 
-### 1. Backend Authentication Controllers
+### 🚀 Core Functionality
 
-- Improved error handling in `backend/src/controllers/auth.controllers.js`
-- Added input validation for required fields
-- Added more specific error messages for different error types
-- Added better error logging
+- **AI-Powered Code Reviews**: Submit JavaScript code and receive detailed AI-generated reviews
+- **Real-time Typewriter Effect**: Code reviews are displayed with a smooth typewriter animation
+- **Syntax Highlighting**: Code editor with Prism.js syntax highlighting
+- **Markdown Support**: Reviews support markdown formatting with code highlighting
 
-### 2. Frontend Login and Signup Components
+### 🔐 Authentication System
 
-- Improved error handling in `frontend/src/components/Auth/Login.jsx` and `frontend/src/components/Auth/Signup.jsx`
-- Added more specific error messages based on HTTP status codes
-- Added better handling for network errors
+- **User Registration & Login**: Secure authentication with JWT tokens
+- **Credit Management**: Users start with initial credits for code reviews
+- **Profile Management**: User profile and credit balance tracking
+- **Protected Routes**: Authentication-required access to core features
 
-### 3. Database Connection
+### 💻 Technical Stack
 
-- Added validation for required environment variables in `backend/src/config/db.js`
-- Added better error messages for database connection issues
+- **Frontend**: React.js with Vite, React Router, Axios
+- **Backend**: Node.js with Express.js
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT-based authentication
+- **Styling**: Custom CSS with responsive design
 
-### 4. Environment Variable Validation
-
-- Added validation for required environment variables in `backend/src/app.js`
-- Added check for JWT_SECRET in authentication middleware
-
-### 5. User Model Improvements
-
-- Added better validation for user input in `backend/src/models/User.js`
-- Improved password handling and comparison
-
-### 6. Authentication Middleware
-
-- Added better error handling for JWT verification in `backend/src/middleware/auth.middleware.js`
-- Added validation for required JWT_SECRET environment variable
-
-### 7. Authentication Routes
-
-- Added error handling middleware in `backend/src/routes/auth.routes.js`
-
-## Required Environment Variables
-
-Create a `.env` file in the `backend` directory with the following variables:
+## Project Structure
 
 ```
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-PORT=3000
+code-review-ai/
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   │   ├── auth.controllers.js    # Authentication logic
+│   │   │   └── aicontrollers.js       # AI review processing
+│   │   ├── models/
+│   │   │   └── User.js                # User schema and model
+│   │   ├── routes/
+│   │   │   ├── airoutes.js            # AI review endpoints
+│   │   │   └── auth.routes.js         # Authentication endpoints
+│   │   └── config/                    # Database and app configuration
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Auth/                  # Login/Signup components
+│   │   │   ├── Navbar/                # Navigation component
+│   │   │   ├── Footer/                # Footer component
+│   │   │   ├── Legal/                 # Legal pages
+│   │   │   └── typewriter/            # Typewriter effect component
+│   │   ├── App.jsx                    # Main application component
+│   │   └── main.jsx                   # Application entry point
+│   └── package.json
+└── README.md
 ```
 
-## Setup Instructions
+## API Endpoints
 
-1. Create a MongoDB database (you can use MongoDB Atlas for a cloud database)
-2. Set up the required environment variables as shown above
-3. Install backend dependencies: `cd backend && npm install`
-4. Install frontend dependencies: `cd frontend && npm install`
-5. Start the backend server: `cd backend && npm run dev`
-6. Start the frontend: `cd frontend && npm run dev`
+### Authentication Endpoints
 
-## Common Issues and Solutions
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/auth/profile` - Get user profile
+- `GET /api/auth/logout` - User logout
 
-### "An error occurred. Please try again"
+### AI Review Endpoints
 
-This error typically occurs when:
+- `POST /ai/get-review` - Submit code for AI review
+- (Requires authentication and credits)
 
-1. Environment variables are not properly configured
-2. Database connection is failing
-3. Network issues between frontend and backend
+## Installation & Setup
 
-### Database Connection Issues
+### Prerequisites
 
-Ensure your MONGODB_URI is correctly configured and the database is accessible.
+- Node.js (v14 or higher)
+- MongoDB (local or MongoDB Atlas)
+- npm or yarn package manager
 
-### JWT Secret Issues
+### Backend Setup
 
-Ensure JWT_SECRET is set in your environment variables.
+1. Navigate to backend directory: `cd backend`
+2. Install dependencies: `npm install`
+3. Create `.env` file with:
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret_key
+   PORT=3000
+   ```
+4. Start development server: `npm run dev`
 
-## Testing the Fix
+### Frontend Setup
 
-1. Try to register a new user with valid credentials
-2. Try to login with existing user credentials
-3. Check browser console and backend terminal for any error messages
-4. Verify that environment variables are properly set
+1. Navigate to frontend directory: `cd frontend`
+2. Install dependencies: `npm install`
+3. Create `.env` file with:
+   ```
+   VITE_API_URL=http://localhost:3000
+   ```
+4. Start development server: `npm run dev`
 
-If you continue to experience issues, check the backend terminal for detailed error messages.
+## Usage
+
+1. **Register/Login**: Create an account or login to access the platform
+2. **Write Code**: Use the built-in code editor to write or paste JavaScript code
+3. **Get Review**: Click "Review" to submit code for AI analysis (consumes 1 credit)
+4. **View Results**: Watch the typewriter effect display your code review
+5. **Manage Credits**: Monitor your credit balance in the navigation bar
+
+## Credit System
+
+- New users receive initial credits upon registration
+- Each code review consumes 1 credit (except for default example code)
+- Credits prevent abuse and manage API usage costs
+
+## Development
+
+### Key Components
+
+**Frontend Components:**
+
+- `App.jsx` - Main application with code editor and review display
+- `Auth/Login.jsx` & `Auth/Signup.jsx` - Authentication forms
+- `typewriter/typewriterEffect.jsx` - Animated text display component
+- `Navbar/Navbar.jsx` - Navigation with user info and credits
+
+**Backend Controllers:**
+
+- `auth.controllers.js` - User registration, login, and profile management
+- `aicontrollers.js` - AI integration and code review processing
+
+### Environment Variables
+
+**Backend (.env):**
+
+- `MONGODB_URI` - MongoDB connection string
+- `JWT_SECRET` - Secret key for JWT tokens
+- `PORT` - Server port (default: 3000)
+
+**Frontend (.env):**
+
+- `VITE_API_URL` - Backend API URL
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support or questions, please open an issue on GitHub or contact the development team.
+
+## Acknowledgments
+
+- React.js and Vite for frontend framework
+- Express.js for backend API
+- MongoDB for database storage
+- Prism.js for code syntax highlighting
+- React Markdown for review formatting
