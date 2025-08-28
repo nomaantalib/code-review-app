@@ -1,4 +1,4 @@
-import axios from "axios";
+ import axios from "axios";
 import Prism from "prismjs";
 import "prismjs/components/prism-javascript";
 import "prismjs/themes/prism-tomorrow.css";
@@ -15,6 +15,7 @@ import rehypeHighlight from "rehype-highlight";
 import "./App.css";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
+import BuyCredits from "./components/BuyCredits/BuyCredits";
 import Footer from "./components/Footer/Footer";
 import ContactUs from "./components/Legal/ContactUs";
 import PrivacyPolicy from "./components/Legal/PrivacyPolicy";
@@ -23,7 +24,7 @@ import Navbar from "./components/Navbar/Navbar";
 import "./components/typewriter/typewriter.css"; // Ensure CSS is imported
 import Typewriter from "./components/typewriter/typewriterEffect";
 
-function App() {
+export default function App() {
   const [code, setCode] = useState(` function sum() {
   return 1 + 1
 }`);
@@ -106,98 +107,101 @@ function App() {
       console.error(error);
     } finally {
       setLoading(false);
+    
     }
-  }
 
-  // Show loading indicator while checking authentication
-  if (authLoading) {
+    // Show loading indicator while checking authentication
+    if (authLoading) {
+      return (
+        <div className="auth-loading">
+          <span className="spinner" /> Checking authentication...
+        </div>
+      );
+    }
+
     return (
-      <div className="auth-loading">
-        <span className="spinner" /> Checking authentication...
-      </div>
-    );
-  }
-
-  return (
-    <Router>
-      <Navbar user={user} setUser={setUser} />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            user ? (
-              <main>
-                <div className="left">
-                  <div className="code">
-                    <Editor
-                      value={code}
-                      onValueChange={(code) => setCode(code)}
-                      highlight={(code) =>
-                        Prism.highlight(
-                          code,
-                          Prism.languages.javascript,
-                          "javascript"
-                        )
-                      }
-                      padding={10}
-                      style={{
-                        fontFamily: '"Fira code", "Fira Mono", monospace',
-                        fontSize: 16,
-                        border: "1px solid #ddd",
-                        borderRadius: "5px",
-                        height: "100%",
-                        width: "100%",
-                      }}
-                    />
-                  </div>
-                  <div className="credits-section">
-                    <span className="credits-count">Credits: {user.credits}</span>
-                    <div onClick={reviewCode} className="review" disabled={user.credits < 1}>
-                      {loading ? <span className="spinner" /> : "Review"}
+      <Router>
+        <Navbar user={user} setUser={setUser} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              user ? (
+                <main>
+                  <div className="left">
+                    <div className="code">
+                      <Editor
+                        value={code}
+                        onValueChange={(code) => setCode(code)}
+                        highlight={(code) =>
+                          Prism.highlight(
+                            code,
+                            Prism.languages.javascript,
+                            "javascript"
+                          )
+                        }
+                        padding={10}
+                        style={{
+                          fontFamily: '"Fira code", "Fira Mono", monospace',
+                          fontSize: 16,
+                          border: "1px solid #ddd",
+                          borderRadius: "5px",
+                          height: "100%",
+                          width: "100%",
+                        }}
+                      />
+                    </div>
+                    <div className="credits-section">
+                      <span className="credits-count">Credits: {user.credits}</span>
+                      <div onClick={reviewCode} className="review" disabled={user.credits < 1}>
+                        {loading ? <span className="spinner" /> : "Review"}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="right">
-                  {loading ? (
-                    <>
-                      <span className="spinner" /> Loading, please wait...
-                    </>
-                  ) : (
-                    <>
-                      <h2>Code Review</h2>
-                      <Typewriter
-                        text={review}
-                        speed={50}
-                        setDisplayedText={setAnimatedReview}
-                      />
-                      <Markdown rehypePlugins={[rehypeHighlight]}>
-                        {animatedReview}
-                      </Markdown>
-                    </>
-                  )}
-                </div>
-              </main>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/" /> : <Login setUser={setUser} />}
-        />
-        <Route
-          path="/signup"
-          element={user ? <Navigate to="/" /> : <Signup setUser={setUser} />}
-        />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsOfService />} />
-        <Route path="/contact" element={<ContactUs />} />
-      </Routes>
-      <Footer />
-    </Router>
-  );
+                  <div className="right">
+                    {loading ? (
+                      <>
+                        <span className="spinner" /> Loading, please wait...
+                      </>
+                    ) : (
+                      <>
+                        <h2>Code Review</h2>
+                        <Typewriter
+                          text={review}
+                          speed={50}
+                          setDisplayedText={setAnimatedReview}
+                        />
+                        <Markdown rehypePlugins={[rehypeHighlight]}>
+                          {animatedReview}
+                        </Markdown>
+                      </>
+                    )}
+                  </div>
+                </main>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/" /> : <Login setUser={setUser} />}
+          />
+          <Route
+            path="/signup"
+            element={user ? <Navigate to="/" /> : <Signup setUser={setUser} />}
+          />
+          <Route
+            path="/buy-credits"
+            element={user ? <BuyCredits user={user} setUser={setUser} /> : <Navigate to="/login" />}
+          />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/contact" element={<ContactUs />} />
+        </Routes>
+        <Footer />
+      </Router>
+    );
+  }
 }
-
-export default App;

@@ -21,6 +21,9 @@ const Navbar = ({ user, setUser }) => {
             <li>
               <Link to="/" >Home</Link>
             </li>
+            <li>
+              <Link to="/buy-credits">Buy Credits</Link>
+            </li>
             <li className="nav-user">
               Welcome, {user.name}! ({user.credits} credits)
             </li>

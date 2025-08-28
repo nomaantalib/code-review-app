@@ -1,0 +1,185 @@
+.buy-credits-container {
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+}
+
+.buy-credits-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #ffffff;
+}
+
+.credits-balance {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #4CAF50;
+}
+
+/* Coupon Section */
+.coupon-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.coupon-input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #343434;
+  border-radius: 0.7rem;
+  background-color: #0c0c0c;
+  color: #ffffff;
+  font-size: 1rem;
+  min-width: 200px;
+}
+
+.coupon-input::placeholder {
+  color: #888;
+}
+
+.coupon-button {
+  padding: 0.8rem 1.5rem;
+  background-color: rgb(219, 219, 255);
+  color: #000000;
+  border: none;
+  border-radius: 0.7rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.coupon-button:hover {
+  background-color: rgb(200, 200, 255);
+}
+
+.coupon-message {
+  text-align: center;
+  color: #4CAF50;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+/* Pricing Plans */
+.pricing-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.pricing-card {
+  background-color: #0c0c0c;
+  padding: 2rem;
+  border-radius: 0.7rem;
+  text-align: center;
+  border: 1px solid #343434;
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.pricing-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.pricing-card.popular {
+  border-color: #4CAF50;
+  background-color: #1a1a1a;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.pricing-card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.price {
+  margin-bottom: 1rem;
+}
+
+.current-price {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #4CAF50;
+  display: block;
+}
+
+.original-price {
+  font-size: 1.2rem;
+  color: #888;
+  text-decoration: line-through;
+  margin-left: 0.5rem;
+}
+
+.discount {
+  background-color: rgb(219, 219, 255);
+  color: #000000;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
+
+.buy-button {
+  width: 100%;
+  padding: 1rem 2rem;
+  background-color: rgb(219, 219, 255);
+  color: #000000;
+  border: none;
+  border-radius: 0.7rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.buy-button:hover:not(:disabled) {
+  background-color: rgb(200, 200, 255);
+}
+
+.buy-button:disabled {
+  background-color: rgba(219, 219, 255, 0.5);
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .buy-credits-container {
+    padding: 1rem;
+  }
+  
+  .pricing-plans {
+    grid-template-columns: 1fr;
+  }
+  
+  .coupon-section {
+    flex-direction: column;
+  }
+  
+  .coupon-input {
+    width: 100%;
+    max-width: 300px;
+  }
+}

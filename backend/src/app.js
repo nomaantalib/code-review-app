@@ -25,6 +25,7 @@ app.use(cors());
 
 app.use(express.json());
 app.use("/ai", airoutes);
+app.use("/api/payment", require("./routes/payment.routes"));
 
 // Import auth routes
 const authRoutes = require("./routes/auth.routes");
