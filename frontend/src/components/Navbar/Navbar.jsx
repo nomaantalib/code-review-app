@@ -1,13 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom';
-import './Navbar.css';
+import { Link, useNavigate } from "react-router-dom";
+import "./Navbar.css";
 
 const Navbar = ({ user, setUser }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -19,10 +19,14 @@ const Navbar = ({ user, setUser }) => {
         {user ? (
           <>
             <li>
-              <Link to="/" >Home</Link>
+              <Link to="/">Home</Link>
             </li>
             <li>
               <Link to="/buy-credits">Buy Credits</Link>
+
+              <Link to="/payment" className="nav-button">
+                Buy Credits
+              </Link>
             </li>
             <li className="nav-user">
               Welcome, {user.name}! ({user.credits} credits)

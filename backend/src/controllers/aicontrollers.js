@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     if (!userId) {
       return res.status(401).send("Authentication required");
     }
-
+    
     // Check if code is the default code - don't charge credits for this
     const defaultCode = ` function sum() {
   return 1 + 1
@@ -45,11 +45,12 @@ module.exports = async (req, res) => {
 
     // Generate AI review
     const response = await generateContent({ prompt: code });
-
+console.log(response);
     res.json({
       review: response,
       creditsRemaining: creditsRemaining,
     });
+
   } catch (error) {
     console.error("Error in AI controller:", error);
     res.status(500).send("Internal Server Error");

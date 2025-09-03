@@ -1,0 +1,243 @@
+.payment-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #2c3e50;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.payment-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.payment-header h2 {
+  color: #ecf0f1;
+  margin-bottom: 0.5rem;
+}
+
+.payment-header p {
+  color: #bdc3c7;
+  font-size: 1.1rem;
+}
+
+.package-selection h3 {
+  color: #ecf0f1;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.package-card {
+  padding: 1.5rem;
+  border: 2px solid #34495e;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #34495e;
+}
+
+.package-card:hover {
+  border-color: #1abc9c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 188, 156, 0.15);
+}
+
+.package-card.selected {
+  border-color: #1abc9c;
+  background: #16a085;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);
+}
+
+.package-card h4 {
+  color: #ecf0f1;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.package-card .price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1abc9c;
+  margin-bottom: 0.5rem;
+}
+
+.package-card .credits-per-rupee {
+  color: #bdc3c7;
+  font-size: 0.9rem;
+}
+
+.payment-method {
+  background: #34495e;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.payment-method h3 {
+  color: #ecf0f1;
+  margin-bottom: 1rem;
+}
+
+.method-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.method-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+.method-options label:hover {
+  background: #1abc9c;
+}
+
+.method-options input[type="radio"] {
+  margin-right: 0.5rem;
+}
+
+.upi-details {
+  background: #34495e;
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #1abc9c;
+  margin-bottom: 1rem;
+}
+
+.upi-details p {
+  margin: 0.25rem 0;
+  color: #ecf0f1;
+  font-family: monospace;
+}
+
+.btn-primary {
+  background: #1abc9c;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #16a085;
+}
+
+.btn-primary:disabled {
+  background: #7f8c8d;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #7f8c8d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.btn-secondary:hover {
+  background: #95a5a6;
+}
+
+.pay-button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.message {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+}
+
+.message.success {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.message.error {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.success-message {
+  text-align: center;
+  padding: 2rem;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  color: #155724;
+}
+
+.success-message h3 {
+  margin-bottom: 1rem;
+  color: #155724;
+}
+
+.success-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.success-buttons .btn-primary,
+.success-buttons .btn-secondary {
+  min-width: 120px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+  
+  .package-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .method-options {
+    flex-direction: column;
+  }
+
+  .success-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .success-buttons .btn-primary,
+  .success-buttons .btn-secondary {
+    width: 100%;
+    max-width: 200px;
+  }
+}

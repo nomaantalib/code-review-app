@@ -1,54 +1,33 @@
-# Razorpay Credits Integration - COMPLETED ✅
+# Payment Error Rectification TODO
 
-## Backend
+## Backend Fixes (payment.controllers.js)
 
-- [x] Install razorpay dependency
-- [x] Create simple payment controller with:
-  - [x] Create order endpoint
-  - [x] Verify payment endpoint
-  - [x] Pricing plans endpoint
-  - [x] Coupon code functionality
-- [x] Create payment routes
-- [x] Update app.js to include payment routes
+- [ ] Review and improve error handling in createOrder function
+- [ ] Review and improve error handling in verifyPayment function
+- [ ] Review and improve error handling in upiPayment function
+- [ ] Review and improve error handling in verifyManualPayment function
+- [ ] Add missing validation for environment variables
+- [ ] Ensure consistent error response format
 
-## Frontend
+## Frontend Fixes (Payment.jsx)
 
-- [x] Add Razorpay script to index.html
-- [x] Create BuyCredits component with:
-  - [x] Pricing tiers: 99₹/200, 199₹/500 (discounted), 999₹/2000 credits
-  - [x] Coupon code input field
-  - [x] Razorpay payment integration
-- [x] Add Buy Credits link to Navbar
-- [x] Create CSS for credits page matching home page styling
-- [x] Add route for BuyCredits component in App.jsx
+- [ ] Improve error message display and user feedback
+- [ ] Add better loading states during payment processing
+- [ ] Improve UPI payment interface and QR code display
+- [ ] Fix any potential issues with payment verification redirects
+- [ ] Add better error handling for network failures
+- [ ] Ensure proper fallback to UPI when Razorpay fails
 
-## Environment Variables Needed
+## Testing & Validation
 
-Add these to your .env files:
+- [ ] Run test-payment-fix.js to verify fixes
+- [ ] Test Razorpay payment flow in test mode
+- [ ] Test UPI payment and manual verification
+- [ ] Verify proper error handling and user feedback
+- [ ] Test edge cases and error scenarios
 
-**Backend (.env):**
+## Environment Setup
 
-```
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-```
-
-**Frontend (.env):**
-
-```
-VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
-```
-
-## Next Steps
-
-1. Set up Razorpay account at razorpay.com
-2. Get API keys from Razorpay dashboard
-3. Add environment variables to your deployment
-4. Test the payment integration
-
-## Coupon Codes Available
-
-- WELCOME10: 10% extra credits
-- FIRST20: 20% extra credits
-
-The implementation is complete and ready for testing!
+- [ ] Verify Razorpay test keys are configured
+- [ ] Ensure UPI details are properly set up
+- [ ] Add fallback defaults for missing environment variables

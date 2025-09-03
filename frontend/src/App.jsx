@@ -1,4 +1,4 @@
- import axios from "axios";
+import axios from "axios";
 import Prism from "prismjs";
 import "prismjs/components/prism-javascript";
 import "prismjs/themes/prism-tomorrow.css";
@@ -21,6 +21,7 @@ import ContactUs from "./components/Legal/ContactUs";
 import PrivacyPolicy from "./components/Legal/PrivacyPolicy";
 import TermsOfService from "./components/Legal/TermsOfService";
 import Navbar from "./components/Navbar/Navbar";
+import Payment from "./components/Payment";
 import "./components/typewriter/typewriter.css"; // Ensure CSS is imported
 import Typewriter from "./components/typewriter/typewriterEffect";
 
@@ -40,7 +41,7 @@ export default function App() {
       axios
         .get(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` },
-          timeout: 5000 // 5 second timeout
+          timeout: 5000, // 5 second timeout
         })
         .then((res) => {
           setUser(res.data);
@@ -62,14 +63,16 @@ export default function App() {
       const defaultCode = ` function sum() {
   return 1 + 1
 }`;
-      
+
       // Check if code is the default code - don't charge credits for this
       const isDefaultCode = code.trim() === defaultCode.trim();
-      
+
       if (!isDefaultCode) {
         // Check if user has credits only for non-default code
         if (user.credits < 1) {
-          setReview("Error: You don't have enough credits to perform a code review.");
+          setReview(
+            "Error: You don't have enough credits to perform a code review."
+          );
           return;
         }
       }
@@ -80,26 +83,26 @@ export default function App() {
         { code: code },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       setReview(response.data.review);
-      
+
       // Update user credits in state only if not default code and credits were deducted
       if (!isDefaultCode && response.data.creditsRemaining !== undefined) {
-        setUser(prevUser => ({
+        setUser((prevUser) => ({
           ...prevUser,
-          credits: response.data.creditsRemaining
+          credits: response.data.creditsRemaining,
         }));
       }
     } catch (error) {
       if (error.response?.status === 402) {
         setReview(`Error: ${error.response.data.message}`);
         // Update user credits to 0 if insufficient credits error
-        setUser(prevUser => ({
+        setUser((prevUser) => ({
           ...prevUser,
-          credits: 0
+          credits: 0,
         }));
       } else {
         setReview("Error: Unable to get review.");
@@ -107,101 +110,126 @@ export default function App() {
       console.error(error);
     } finally {
       setLoading(false);
-    
     }
+  }
 
-    // Show loading indicator while checking authentication
-    if (authLoading) {
-      return (
-        <div className="auth-loading">
-          <span className="spinner" /> Checking authentication...
-        </div>
-      );
-    }
-
+  // Show loading indicator while checking authentication
+  if (authLoading) {
     return (
-      <Router>
-        <Navbar user={user} setUser={setUser} />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              user ? (
-                <main>
-                  <div className="left">
-                    <div className="code">
-                      <Editor
-                        value={code}
-                        onValueChange={(code) => setCode(code)}
-                        highlight={(code) =>
-                          Prism.highlight(
-                            code,
-                            Prism.languages.javascript,
-                            "javascript"
-                          )
-                        }
-                        padding={10}
-                        style={{
-                          fontFamily: '"Fira code", "Fira Mono", monospace',
-                          fontSize: 16,
-                          border: "1px solid #ddd",
-                          borderRadius: "5px",
-                          height: "100%",
-                          width: "100%",
-                        }}
-                      />
-                    </div>
-                    <div className="credits-section">
-                      <span className="credits-count">Credits: {user.credits}</span>
-                      <div onClick={reviewCode} className="review" disabled={user.credits < 1}>
-                        {loading ? <span className="spinner" /> : "Review"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="right">
-                    {loading ? (
-                      <>
-                        <span className="spinner" /> Loading, please wait...
-                      </>
-                    ) : (
-                      <>
-                        <h2>Code Review</h2>
-                        <Typewriter
-                          text={review}
-                          speed={50}
-                          setDisplayedText={setAnimatedReview}
-                        />
-                        <Markdown rehypePlugins={[rehypeHighlight]}>
-                          {animatedReview}
-                        </Markdown>
-                      </>
-                    )}
-                  </div>
-                </main>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/login"
-            element={user ? <Navigate to="/" /> : <Login setUser={setUser} />}
-          />
-          <Route
-            path="/signup"
-            element={user ? <Navigate to="/" /> : <Signup setUser={setUser} />}
-          />
-          <Route
-            path="/buy-credits"
-            element={user ? <BuyCredits user={user} setUser={setUser} /> : <Navigate to="/login" />}
-          />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/contact" element={<ContactUs />} />
-        </Routes>
-        <Footer />
-      </Router>
+      <div className="auth-loading">
+        <span className="spinner" /> Checking authentication...
+      </div>
     );
   }
+
+  return (
+    <Router>
+      <Navbar user={user} setUser={setUser} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            user ? (
+              <main>
+                <div className="left">
+                  <div className="code">
+                    <Editor
+                      value={code}
+                      onValueChange={(code) => setCode(code)}
+                      highlight={(code) =>
+                        Prism.highlight(
+                          code,
+                          Prism.languages.javascript,
+                          "javascript"
+                        )
+                      }
+                      padding={10}
+                      style={{
+                        fontFamily: '"Fira code", "Fira Mono", monospace',
+                        fontSize: 16,
+                        border: "1px solid #ddd",
+                        borderRadius: "5px",
+                        height: "100%",
+                        width: "100%",
+                      }}
+                    />
+                  </div>
+                  <div className="credits-section">
+                    <span className="credits-count">
+                      Credits: {user.credits}
+                    </span>
+                    <div
+                      onClick={reviewCode}
+                      className="review"
+                      disabled={user.credits < 1}
+                    >
+                      {loading ? <span className="spinner" /> : "Review"}
+                    </div>
+                  </div>
+                </div>
+                <div className="right">
+                  {loading ? (
+                    <>
+                      <span className="spinner" /> Loading, please wait...
+                    </>
+                  ) : (
+                    <>
+                      <h2>Code Review</h2>
+                      <Typewriter
+                        text={review}
+                        speed={50}
+                        setDisplayedText={setAnimatedReview}
+                      />
+                      <Markdown rehypePlugins={[rehypeHighlight]}>
+                        {animatedReview}
+                      </Markdown>
+                    </>
+                  )}
+                </div>
+              </main>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/" /> : <Login setUser={setUser} />}
+        />
+        <Route
+          path="/signup"
+          element={user ? <Navigate to="/" /> : <Signup setUser={setUser} />}
+        />
+        <Route
+          path="/buycredits"
+          element={
+            <Payment
+              userId={user?._id}
+              currentCredits={user?.credits || 0}
+              onCreditsUpdate={() => {
+                // Refresh user data to get updated credits
+                const token = localStorage.getItem("token");
+                if (token) {
+                  axios
+                    .get(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
+                      headers: { Authorization: `Bearer ${token}` },
+                    })
+                    .then((res) => {
+                      setUser(res.data);
+                    })
+                    .catch((error) => {
+                      console.error("Failed to refresh user data:", error);
+                    });
+                }
+              }}
+            />
+          }
+        />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/contact" element={<ContactUs />} />
+      </Routes>
+      <Footer />
+    </Router>
+  );
 }

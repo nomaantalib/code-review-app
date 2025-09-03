@@ -29,6 +29,21 @@ const userSchema = new mongoose.Schema(
       default: 10,
       min: [0, "Credits cannot be negative"],
     },
+    paymentHistory: [{
+      amount: Number,
+      credits: Number,
+      paymentMethod: String,
+      transactionId: String,
+      status: {
+        type: String,
+        enum: ['pending', 'completed', 'failed'],
+        default: 'pending'
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      }
+    }]
   },
   {
     timestamps: true,
