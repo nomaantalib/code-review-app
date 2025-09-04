@@ -22,9 +22,7 @@ const Navbar = ({ user, setUser }) => {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/buy-credits">Buy Credits</Link>
-
-              <Link to="/payment" className="nav-button">
+              <Link to="/buy-credits" className="nav-button">
                 Buy Credits
               </Link>
             </li>

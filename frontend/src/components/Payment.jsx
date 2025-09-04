@@ -66,7 +66,12 @@ const Payment = ({
           userId,
           credits: selectedPackage.credits,
         },
-        { timeout: 10000 }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          timeout: 10000,
+        }
       );
 
       const { orderId, amount, currency, key } = response.data;
@@ -144,7 +149,12 @@ const Payment = ({
           userId,
           credits: selectedPackage.credits,
         },
-        { timeout: 10000 }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          timeout: 10000,
+        }
       );
 
       setMessage(
@@ -180,7 +190,12 @@ const Payment = ({
           userId,
           credits: selectedPackage.credits,
         },
-        { timeout: 10000 }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          timeout: 10000,
+        }
       );
 
       const { upiDetails, qrCode, instructions } = response.data;
@@ -237,7 +252,12 @@ Note: Please include the Transaction ID in your payment reference.
           transactionId,
           credits: selectedPackage.credits,
         },
-        { timeout: 10000 }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          timeout: 10000,
+        }
       );
 
       setMessage(

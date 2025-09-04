@@ -15,7 +15,7 @@ import rehypeHighlight from "rehype-highlight";
 import "./App.css";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
-import BuyCredits from "./components/BuyCredits/BuyCredits";
+
 import Footer from "./components/Footer/Footer";
 import ContactUs from "./components/Legal/ContactUs";
 import PrivacyPolicy from "./components/Legal/PrivacyPolicy";
@@ -200,31 +200,8 @@ export default function App() {
           path="/signup"
           element={user ? <Navigate to="/" /> : <Signup setUser={setUser} />}
         />
-        <Route
-          path="/buycredits"
-          element={
-            <Payment
-              userId={user?._id}
-              currentCredits={user?.credits || 0}
-              onCreditsUpdate={() => {
-                // Refresh user data to get updated credits
-                const token = localStorage.getItem("token");
-                if (token) {
-                  axios
-                    .get(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
-                      headers: { Authorization: `Bearer ${token}` },
-                    })
-                    .then((res) => {
-                      setUser(res.data);
-                    })
-                    .catch((error) => {
-                      console.error("Failed to refresh user data:", error);
-                    });
-                }
-              }}
-            />
-          }
-        />
+        <Route path="/buy-credits" element={<Payment />} />
+
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/contact" element={<ContactUs />} />
