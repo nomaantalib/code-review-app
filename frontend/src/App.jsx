@@ -200,7 +200,23 @@ export default function App() {
           path="/signup"
           element={user ? <Navigate to="/" /> : <Signup setUser={setUser} />}
         />
-        <Route path="/buy-credits" element={<Payment />} />
+        <Route
+          path="/buy-credits"
+          element={
+            user ? (
+              <Payment
+                userId={user._id}
+                currentCredits={user.credits}
+                onCreditsUpdate={refreshUser}
+                user={user}
+                setUser={setUser}
+                refreshUser={refreshUser}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
 
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
