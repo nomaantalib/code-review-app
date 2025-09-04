@@ -58,6 +58,26 @@ export default function App() {
     }
   }, []);
 
+  const refreshUser = async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/auth/profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 5000,
+          }
+        );
+        setUser(res.data);
+      } catch (error) {
+        console.error("Refresh user failed:", error);
+        localStorage.removeItem("token");
+        setUser(null);
+      }
+    }
+  };
+
   async function reviewCode() {
     try {
       const defaultCode = ` function sum() {
