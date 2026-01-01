@@ -5,6 +5,7 @@ const {
   upiPayment,
   verifyManualPayment,
   getPricingPlans,
+  getPaymentHistory,
 } = require("../controllers/payment.controllers");
 const authMiddleware = require("../middleware/auth.middleware");
 
@@ -26,16 +27,6 @@ router.post("/verify-manual-payment", authMiddleware, verifyManualPayment);
 router.get("/pricing", getPricingPlans);
 
 // Get user payment history
-router.get("/history/:userId", authMiddleware, async (req, res) => {
-  try {
-    const User = require("../models/User");
-    const user = await User.findById(req.params.userId).select(
-      "paymentHistory"
-    );
-    res.status(200).json(user.paymentHistory);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching payment history", error });
-  }
-});
+router.get("/history/:userId", authMiddleware, getPaymentHistory);
 
 module.exports = router;

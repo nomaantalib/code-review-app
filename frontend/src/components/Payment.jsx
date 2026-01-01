@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Payment.css";
 
 const Payment = ({
-  userId = "688f9bc4dd0a99fe313b03c6",
+  userId,
   currentCredits,
   onCreditsUpdate,
 }) => {
+  const [creditPackages, setCreditPackages] = useState([]);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -15,11 +16,23 @@ const Payment = ({
   const [upiQrCode, setUpiQrCode] = useState(null);
   const [paymentError, setPaymentError] = useState(null);
 
-  const creditPackages = [
-    { credits: 100, price: 200, description: "100 Credits - ₹200" },
-    { credits: 500, price: 1000, description: "500 Credits - ₹1,000" },
-    { credits: 1000, price: 2000, description: "1000 Credits - ₹2,000" },
-  ];
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/payment/pricing`);
+        setCreditPackages(response.data);
+      } catch (error) {
+        console.error("Failed to fetch pricing plans:", error);
+        // Fallback to defaults if backend fails
+        setCreditPackages([
+          { credits: 200, price: 99 },
+          { credits: 500, price: 199 },
+          { credits: 2000, price: 999 },
+        ]);
+      }
+    };
+    fetchPlans();
+  }, []);
 
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
@@ -61,7 +74,7 @@ const Payment = ({
     try {
       // Create Razorpay order
       const response = await axios.post(
-        "http://localhost:3000/api/payment/create-order",
+        `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
         {
           userId,
           credits: selectedPackage.credits,
@@ -141,7 +154,7 @@ const Payment = ({
   const verifyRazorpayPayment = async (paymentResponse, orderId) => {
     try {
       const verifyResponse = await axios.post(
-        "http://localhost:3000/api/payment/verify-payment",
+        `${import.meta.env.VITE_API_URL}/api/payment/verify-payment`,
         {
           razorpay_order_id: orderId,
           razorpay_payment_id: paymentResponse.razorpay_payment_id,
@@ -185,7 +198,7 @@ const Payment = ({
   const handleUpiPayment = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/payment/upi-payment",
+        `${import.meta.env.VITE_API_URL}/api/payment/upi-payment`,
         {
           userId,
           credits: selectedPackage.credits,
@@ -246,7 +259,7 @@ Note: Please include the Transaction ID in your payment reference.
       }
 
       const response = await axios.post(
-        "http://localhost:3000/api/payment/verify-manual-payment",
+        `${import.meta.env.VITE_API_URL}/api/payment/verify-manual-payment`,
         {
           userId,
           transactionId,

@@ -1,58 +1,77 @@
-const { generateContent } = require("../services/aiservices");
-const User = require("../models/User");
+const { generateCodeReview } = require("../services/aiservices");
 
 module.exports = async (req, res) => {
   try {
-    const code = req.body.code;
-    const userId = req.user?.id; // Get user ID from authenticated request
+    const { code } = req.body;
 
-    if (!code) {
-      return res.status(400).send("Code is required");
-    }
-
-    if (!userId) {
-      return res.status(401).send("Authentication required");
-    }
-    
-    // Check if code is the default code - don't charge credits for this
+    // Check if this is the default example code - allow anonymous access
     const defaultCode = ` function sum() {
   return 1 + 1
 }`;
     const isDefaultCode = code.trim() === defaultCode.trim();
 
-    let creditsRemaining = null;
-
-    if (!isDefaultCode) {
-      // Check user credits only for non-default code
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).send("User not found");
-      }
-
-      if (user.credits < 1) {
-        return res.status(402).json({
-          error: "Insufficient credits",
-          message:
-            "You don't have enough credits to perform a code review. Please contact support or wait for credit refresh.",
-        });
-      }
-
-      // Deduct 1 credit and save only for non-default code
-      user.credits -= 1;
-      await user.save();
-      creditsRemaining = user.credits;
+    // Only require authentication for non-default code
+    if (!isDefaultCode && !req.user) {
+      console.error(
+        "AI Controller: No user found in request for custom code review"
+      );
+      return res
+        .status(401)
+        .json({ message: "Authentication required for custom code reviews" });
     }
 
-    // Generate AI review
-    const response = await generateContent({ prompt: code });
-console.log(response);
-    res.json({
-      review: response,
-      creditsRemaining: creditsRemaining,
-    });
+    const prompt = `
+You are an expert code reviewer with 7+ years experience.
+Review the following code:
 
+${code}
+`;
+
+    console.log(
+      `[AI Controller] Generating review for ${
+        req.user ? "user " + req.user._id : "anonymous user"
+      }`
+    );
+    const review = await generateCodeReview(prompt);
+
+    // Check if this is the default example code - don't deduct credits for demo
+    // defaultCode and isDefaultCode are already declared above
+
+    let creditsRemaining;
+    if (!isDefaultCode && req.user) {
+      // Update user credits in database only for non-default code with authenticated user
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        { $inc: { credits: -1 } },
+        { new: true }
+      );
+      creditsRemaining = updatedUser.credits;
+    } else if (req.user) {
+      // For default code with authenticated user, just get current credits
+      const currentUser = await User.findById(req.user._id);
+      creditsRemaining = currentUser.credits;
+    } else {
+      // Anonymous user - no credits to track
+      creditsRemaining = null;
+    }
+
+    res.json({
+      review,
+      creditsRemaining,
+    });
   } catch (error) {
-    console.error("Error in AI controller:", error);
-    res.status(500).send("Internal Server Error");
+    console.error("Error in AI controller (FULL):", error);
+
+    // Check for specific Gemini errors (often 404 or 400 from Google API)
+    let errorMessage = error.message;
+    if (errorMessage.includes("404") || errorMessage.includes("not found")) {
+      errorMessage =
+        "AI Model not available (404). Please check API configuration.";
+    }
+
+    res.status(500).json({
+      message: "AI review failed",
+      error: errorMessage,
+    });
   }
 };

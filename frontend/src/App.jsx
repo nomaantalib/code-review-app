@@ -87,30 +87,34 @@ export default function App() {
       // Check if code is the default code - don't charge credits for this
       const isDefaultCode = code.trim() === defaultCode.trim();
 
-      if (!isDefaultCode) {
-        // Check if user has credits only for non-default code
-        if (user.credits < 1) {
-          setReview(
-            "Error: You don't have enough credits to perform a code review."
-          );
-          return;
-        }
+      if (!isDefaultCode && !user) {
+        // Anonymous user trying to review custom code
+        setReview("Please login to review custom code. The demo code above is free to try!");
+        return;
+      }
+
+      if (!isDefaultCode && user && user.credits < 1) {
+        // Logged in user but no credits
+        setReview(
+          "Error: You don't have enough credits to perform a code review."
+        );
+        return;
       }
 
       setLoading(true);
+      const headers = user ? {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      } : {};
+
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/ai/get-review`,
         { code: code },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+        { headers }
       );
       setReview(response.data.review);
 
       // Update user credits in state only if not default code and credits were deducted
-      if (!isDefaultCode && response.data.creditsRemaining !== undefined) {
+      if (!isDefaultCode && user && response.data.creditsRemaining !== undefined) {
         setUser((prevUser) => ({
           ...prevUser,
           credits: response.data.creditsRemaining,
@@ -124,8 +128,11 @@ export default function App() {
           ...prevUser,
           credits: 0,
         }));
+      } else if (error.response?.data?.error || error.response?.data?.message) {
+        // Show the actual error from the backend (e.g., AI Mock unavailable or 500 details)
+        setReview(`Error: ${error.response.data.error || error.response.data.message}`);
       } else {
-        setReview("Error: Unable to get review.");
+        setReview("Error: Unable to get review. Please try again later.");
       }
       console.error(error);
     } finally {
@@ -149,67 +156,63 @@ export default function App() {
         <Route
           path="/"
           element={
-            user ? (
-              <main>
-                <div className="left">
-                  <div className="code">
-                    <Editor
-                      value={code}
-                      onValueChange={(code) => setCode(code)}
-                      highlight={(code) =>
-                        Prism.highlight(
-                          code,
-                          Prism.languages.javascript,
-                          "javascript"
-                        )
-                      }
-                      padding={10}
-                      style={{
-                        fontFamily: '"Fira code", "Fira Mono", monospace',
-                        fontSize: 16,
-                        border: "1px solid #ddd",
-                        borderRadius: "5px",
-                        height: "100%",
-                        width: "100%",
-                      }}
+            <main>
+              <div className="left">
+                <div className="code">
+                  <Editor
+                    value={code}
+                    onValueChange={(code) => setCode(code)}
+                    highlight={(code) =>
+                      Prism.highlight(
+                        code,
+                        Prism.languages.javascript,
+                        "javascript"
+                      )
+                    }
+                    padding={10}
+                    style={{
+                      fontFamily: '"Fira code", "Fira Mono", monospace',
+                      fontSize: 16,
+                      border: "1px solid #ddd",
+                      borderRadius: "5px",
+                      height: "100%",
+                      width: "100%",
+                    }}
+                  />
+                </div>
+                <div className="credits-section">
+                  <span className="credits-count">
+                    Credits: {user ? user.credits : 'Demo'}
+                  </span>
+                  <div
+                    onClick={reviewCode}
+                    className="review"
+                    disabled={loading}
+                  >
+                    {loading ? <span className="spinner" /> : "Review"}
+                  </div>
+                </div>
+              </div>
+              <div className="right">
+                {loading ? (
+                  <>
+                    <span className="spinner" /> Loading, please wait...
+                  </>
+                ) : (
+                  <>
+                    <h2>Code Review</h2>
+                    <Typewriter
+                      text={review}
+                      speed={50}
+                      setDisplayedText={setAnimatedReview}
                     />
-                  </div>
-                  <div className="credits-section">
-                    <span className="credits-count">
-                      Credits: {user.credits}
-                    </span>
-                    <div
-                      onClick={reviewCode}
-                      className="review"
-                      disabled={user.credits < 1}
-                    >
-                      {loading ? <span className="spinner" /> : "Review"}
-                    </div>
-                  </div>
-                </div>
-                <div className="right">
-                  {loading ? (
-                    <>
-                      <span className="spinner" /> Loading, please wait...
-                    </>
-                  ) : (
-                    <>
-                      <h2>Code Review</h2>
-                      <Typewriter
-                        text={review}
-                        speed={50}
-                        setDisplayedText={setAnimatedReview}
-                      />
-                      <Markdown rehypePlugins={[rehypeHighlight]}>
-                        {animatedReview}
-                      </Markdown>
-                    </>
-                  )}
-                </div>
-              </main>
-            ) : (
-              <Navigate to="/login" />
-            )
+                    <Markdown rehypePlugins={[rehypeHighlight]}>
+                      {animatedReview}
+                    </Markdown>
+                  </>
+                )}
+              </div>
+            </main>
           }
         />
         <Route

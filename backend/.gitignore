@@ -3,14 +3,23 @@
 *.key
 *.pem
 config/secrets/*
+
 # Node.js dependencies
 node_modules/
+
 # Build directories
-dist/   
+dist/
 build/
+
 # Logs
-logs/   
+logs/
 *.log
+
 # Temporary files
-    .vscode/
-    
+.vscode/
+.DS_Store
+
+# Test files and output
+*test*.js
+*check*.js
+*output*.txt

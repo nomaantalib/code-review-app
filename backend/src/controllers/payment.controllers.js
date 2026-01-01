@@ -1,5 +1,6 @@
 const express = require("express");
 const Razorpay = require("razorpay");
+require("dotenv").config();
 const crypto = require("crypto");
 const QRCode = require("qrcode");
 const User = require("../models/User");
@@ -7,12 +8,18 @@ const User = require("../models/User");
 // Initialize Razorpay instance (only if credentials are available)
 let razorpay;
 try {
+  console.log("Initializing Razorpay...");
+  console.log("RAZORPAY_KEY_ID present:", !!process.env.RAZORPAY_KEY_ID);
+  console.log(
+    "RAZORPAY_KEY_SECRET present:",
+    !!process.env.RAZORPAY_KEY_SECRET
+  );
   if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
     razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
-    console.log("Razorpay initialized successfully");
+    console.log("Razorpay initialized successfully, type:", typeof razorpay);
   } else {
     console.warn(
       "Razorpay credentials not found. Payment functionality will be limited."
@@ -20,18 +27,24 @@ try {
   }
 } catch (error) {
   console.error("Failed to initialize Razorpay:", error.message);
+  razorpay = null;
 }
 
-// Credit packages configuration
+// Credit packages configuration (matching pricing plans)
 const CREDIT_PACKAGES = {
-  100: 20000, // 200 INR in paise
-  500: 100000, // 1000 INR in paise
-  1000: 200000, // 2000 INR in paise
+  200: 9900,   // 99 INR in paise
+  500: 19900,  // 199 INR in paise
+  2000: 99900, // 999 INR in paise
 };
 
 // Create Razorpay order
 const createOrder = async (req, res) => {
   const { userId, credits } = req.body;
+  console.log("createOrder called with:", {
+    userId,
+    credits,
+  });
+  console.log("razorpay object:", !!razorpay, typeof razorpay);
 
   // Validate required parameters
   if (!userId) {
@@ -52,6 +65,24 @@ const createOrder = async (req, res) => {
   }
 
   // Check if Razorpay is initialized
+  console.log("Razorpay check: razorpay exists?", !!razorpay);
+  if (!razorpay) {
+    console.log("Attempting to re-initialize Razorpay...");
+    try {
+      if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+        razorpay = new Razorpay({
+          key_id: process.env.RAZORPAY_KEY_ID,
+          key_secret: process.env.RAZORPAY_KEY_SECRET,
+        });
+        console.log("Razorpay re-initialized successfully");
+      } else {
+        console.error("Razorpay credentials still not available");
+      }
+    } catch (error) {
+      console.error("Failed to re-initialize Razorpay:", error.message);
+    }
+  }
+
   if (!razorpay) {
     console.error("Razorpay not initialized - credentials missing");
     return res.status(503).json({
@@ -597,10 +628,30 @@ const getPricingPlans = (req, res) => {
   res.json(plans);
 };
 
+// Get user payment history
+const getPaymentHistory = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).select(
+      "paymentHistory"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user.paymentHistory);
+  } catch (error) {
+    console.error("Error fetching payment history:", error);
+    res.status(500).json({
+      message: "Error fetching payment history",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createOrder,
   verifyPayment,
   upiPayment,
   verifyManualPayment,
   getPricingPlans,
+  getPaymentHistory,
 };
