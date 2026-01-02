@@ -47,29 +47,29 @@ https://code-review-app-mlku.onrender.com
 ---
 
 ###  Login Page
-```md
+
 ![Login Page](https://github.com/nomaantalib/code-review-app/blob/main/Screenshot_20260103-023414.Chrome.png)
-```
+
 ### Code Review – Input Editor
-```md
+
 ![Code Input](Screenshot_20260103-023519.Chrome.png)
-```
+
 ### Code Review – AI Output
-```md
+
 ![code review output](Screenshot_20260103-023809.Chrome.png)
-```
+
 ### Buy Credits Page
-```md
+
 ![Buy Credits](Screenshot_20260103-023845.Chrome.png)
-```
+
 ### UPI Payment & QR Flow
-```md
+
 ![UPI Payment](Screenshot_20260103-023917.Chrome.png)
-```
+
 ### Payment Success & Credit Update
-```md
+
 ![Payment Success](Screenshot_20260103-023931.Chrome.png)
-```
+
 ##  Run Locally
 
 ###  Clone the Repository
