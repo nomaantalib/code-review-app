@@ -48,7 +48,7 @@ https://code-review-app-mlku.onrender.com
 
 ###  Login Page
 ```md
-![Login Page](Screenshot_20260103-023434-505.png)
+![Login Page](https://raw.githubusercontent.com/nomaantalib/code-review-app/refs/heads/main/Screenshot_20260103-023414.Chrome.png)
 ```
 ### Code Review – Input Editor
 ```md
