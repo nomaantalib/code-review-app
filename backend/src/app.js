@@ -18,9 +18,34 @@ if (missingEnvVars.length > 0) {
 connectDB();
 
 const app = express();
-app.use(cors());
 
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (process.env.NODE_ENV === "production") {
+      callback(null, true);
+    } else {
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:5174",
+      ];
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use("/ai", airoutes);
 
 // Import auth routes

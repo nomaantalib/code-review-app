@@ -4,39 +4,31 @@ require("dotenv").config();
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 async function generateCodeReview(prompt) {
-  // Try primary model: gemini-2.5-flash
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-  });
+  if (!process.env.GOOGLE_API_KEY) {
+    throw new Error("GOOGLE_API_KEY is not configured");
+  }
 
-  try {
-    const result = await model.generateContent({
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: prompt }],
-        },
-      ],
-    });
-    return result.response.text();
-  } catch (error) {
-    console.error(
-      "Gemini 2.5 Flash failed, trying gemini-2.5-pro backup:",
-      error.message
-    );
+  const models = ["gemini-1.5-flash"];
 
-    // Fallback to gemini-2.5-pro
+  for (const modelName of models) {
     try {
-      const backupModel = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
-      const result = await backupModel.generateContent({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-      });
-      return result.response.text();
-    } catch (backupError) {
-      console.error("All AI models failed:", backupError.message);
-      throw new Error("AI Service Unavailable: " + backupError.message);
+      console.log(`Attempting to use model: ${modelName}`);
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
+      
+      if (!result || !result.response) {
+        throw new Error("Invalid response from API");
+      }
+      
+      const text = result.response.text();
+      return text;
+    } catch (error) {
+      console.error(`Model ${modelName} failed:`, error);
+      throw error;
     }
   }
+
+  throw new Error("AI service unavailable");
 }
 
 module.exports = { generateCodeReview };

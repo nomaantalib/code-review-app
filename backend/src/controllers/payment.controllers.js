@@ -5,30 +5,29 @@ const crypto = require("crypto");
 const QRCode = require("qrcode");
 const User = require("../models/User");
 
-// Initialize Razorpay instance (only if credentials are available)
-let razorpay;
-try {
-  console.log("Initializing Razorpay...");
-  console.log("RAZORPAY_KEY_ID present:", !!process.env.RAZORPAY_KEY_ID);
-  console.log(
-    "RAZORPAY_KEY_SECRET present:",
-    !!process.env.RAZORPAY_KEY_SECRET
-  );
-  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-    razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
-    });
-    console.log("Razorpay initialized successfully, type:", typeof razorpay);
-  } else {
-    console.warn(
-      "Razorpay credentials not found. Payment functionality will be limited."
-    );
+let razorpay = null;
+
+const initializeRazorpay = () => {
+  if (razorpay) return razorpay;
+
+  try {
+    if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+      console.log("Initializing Razorpay instance...");
+      razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+      });
+      console.log("✓ Razorpay initialized successfully");
+      return razorpay;
+    } else {
+      console.warn("⚠ Razorpay credentials not configured");
+      return null;
+    }
+  } catch (error) {
+    console.error("✗ Failed to initialize Razorpay:", error.message);
+    return null;
   }
-} catch (error) {
-  console.error("Failed to initialize Razorpay:", error.message);
-  razorpay = null;
-}
+};
 
 // Credit packages configuration (matching pricing plans)
 const CREDIT_PACKAGES = {
@@ -40,18 +39,14 @@ const CREDIT_PACKAGES = {
 // Create Razorpay order
 const createOrder = async (req, res) => {
   const { userId, credits } = req.body;
-  console.log("createOrder called with:", {
-    userId,
-    credits,
-  });
-  console.log("razorpay object:", !!razorpay, typeof razorpay);
+
+  console.log("📋 Create Order Request:", { userId, credits });
 
   // Validate required parameters
   if (!userId) {
     return res.status(400).json({
       message: "User ID is required",
       error: "Missing userId",
-      suggestion: "Please provide a valid user ID",
     });
   }
 
@@ -60,36 +55,15 @@ const createOrder = async (req, res) => {
       message: "Invalid credit package",
       error: "Invalid credits",
       availablePackages: Object.keys(CREDIT_PACKAGES),
-      suggestion: "Please select a valid credit package",
     });
   }
 
-  // Check if Razorpay is initialized
-  console.log("Razorpay check: razorpay exists?", !!razorpay);
-  if (!razorpay) {
-    console.log("Attempting to re-initialize Razorpay...");
-    try {
-      if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-        razorpay = new Razorpay({
-          key_id: process.env.RAZORPAY_KEY_ID,
-          key_secret: process.env.RAZORPAY_KEY_SECRET,
-        });
-        console.log("Razorpay re-initialized successfully");
-      } else {
-        console.error("Razorpay credentials still not available");
-      }
-    } catch (error) {
-      console.error("Failed to re-initialize Razorpay:", error.message);
-    }
-  }
-
-  if (!razorpay) {
-    console.error("Razorpay not initialized - credentials missing");
+  const rzp = initializeRazorpay();
+  if (!rzp) {
+    console.error("❌ Razorpay credentials not configured on this server");
     return res.status(503).json({
-      message:
-        "Payment service temporarily unavailable. Please use UPI payment method.",
+      message: "Payment service unavailable. Please use UPI payment.",
       error: "Razorpay not configured",
-      suggestion: "Please contact support or use UPI payment",
     });
   }
 
@@ -116,7 +90,7 @@ const createOrder = async (req, res) => {
 
     console.log("Creating Razorpay order with options:", options);
 
-    const order = await razorpay.orders.create(options);
+    const order = await rzp.orders.create(options);
 
     console.log("Razorpay order created successfully:", order.id);
 
@@ -206,14 +180,14 @@ const verifyPayment = async (req, res) => {
   }
 
   try {
-    // Check if Razorpay is configured
-    if (!razorpay) {
-      console.error("Razorpay not initialized during verification");
+    // Initialize Razorpay if not already done
+    const rzp = initializeRazorpay();
+    if (!rzp) {
+      console.error("❌ Razorpay not configured during verification");
       return res.status(503).json({
         message: "Payment service not configured. Please contact support.",
         error: "Razorpay not initialized",
         transactionId: razorpay_order_id,
-        suggestion: "Please contact support or use UPI payment",
       });
     }
 

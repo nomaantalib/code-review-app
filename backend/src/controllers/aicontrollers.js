@@ -1,4 +1,5 @@
 const { generateCodeReview } = require("../services/aiservices");
+const User = require("../models/User");
 
 module.exports = async (req, res) => {
   try {
@@ -18,6 +19,17 @@ module.exports = async (req, res) => {
       return res
         .status(401)
         .json({ message: "Authentication required for custom code reviews" });
+    }
+
+    // Check if user has enough credits for custom code
+    if (!isDefaultCode && req.user && req.user.credits < 1) {
+      console.error(
+        "AI Controller: Insufficient credits for user",
+        req.user._id
+      );
+      return res.status(402).json({
+        message: "Insufficient credits. Please purchase more credits.",
+      });
     }
 
     const prompt = `
@@ -60,17 +72,27 @@ ${code}
       creditsRemaining,
     });
   } catch (error) {
-    console.error("Error in AI controller (FULL):", error);
+    console.error("Error in AI controller:", error);
 
-    // Check for specific Gemini errors (often 404 or 400 from Google API)
-    let errorMessage = error.message;
-    if (errorMessage.includes("404") || errorMessage.includes("not found")) {
-      errorMessage =
-        "AI Model not available (404). Please check API configuration.";
+    let errorMessage = error.message || "Unknown error";
+    let statusCode = 500;
+
+    if (errorMessage.includes("GOOGLE_API_KEY")) {
+      statusCode = 503;
+      errorMessage = "AI service not configured";
+    } else if (errorMessage.includes("401") || errorMessage.includes("authentication")) {
+      statusCode = 503;
+      errorMessage = "AI service authentication failed";
+    } else if (errorMessage.includes("404") || errorMessage.includes("not found")) {
+      statusCode = 503;
+      errorMessage = "AI model not available";
+    } else if (errorMessage.includes("rate limit") || errorMessage.includes("quota")) {
+      statusCode = 429;
+      errorMessage = "AI service rate limit exceeded. Please try again later.";
     }
 
-    res.status(500).json({
-      message: "AI review failed",
+    res.status(statusCode).json({
+      message: "Unable to generate review",
       error: errorMessage,
     });
   }
