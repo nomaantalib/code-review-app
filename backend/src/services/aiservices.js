@@ -1,12 +1,24 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config();
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+// Default API Key provided by user
+const DEFAULT_API_KEY = "AIzaSyAYy02CQ2z6nrwErxmTCG4QVnnRs0IYUS0";
+
+const getApiKey = () => {
+  const envKey = process.env.GOOGLE_API_KEY;
+  // If envKey is not set, or is the old/invalid placeholder, use the new default key
+  if (!envKey || envKey === "AIzaSyAxrgW4PckJzAs3B0ZfKleOVB1OlHBtpYM") {
+    return DEFAULT_API_KEY;
+  }
+  return envKey;
+};
 
 async function generateCodeReview(prompt) {
-  if (!process.env.GOOGLE_API_KEY) {
-    throw new Error("GOOGLE_API_KEY is not configured");
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error("Gemini API key is not configured");
   }
+  const genAI = new GoogleGenerativeAI(apiKey);
 
   const models = ["gemini-1.5-flash"];
 
