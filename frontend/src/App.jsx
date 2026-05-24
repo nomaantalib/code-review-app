@@ -231,7 +231,7 @@ export default function App() {
                     </div>
                     <Typewriter
                       text={review}
-                      speed={50}
+                      speed={25}
                       setDisplayedText={setAnimatedReview}
                     />
                     <Markdown rehypePlugins={[rehypeHighlight]}>

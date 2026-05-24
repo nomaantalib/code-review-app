@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import "../typewriter/typewriter.css";
 
-function Typewriter({ text = "", speed = 100, setDisplayedText }) {
+function Typewriter({ text = "", speed = 50, setDisplayedText }) {
   const [localText, setLocalText] = useState("");
 
   useEffect(() => {
