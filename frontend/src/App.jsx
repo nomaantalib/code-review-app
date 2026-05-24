@@ -34,6 +34,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [selectedModel, setSelectedModel] = useState("gemini-2.0-flash");
+  const [modelUsed, setModelUsed] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -80,6 +82,7 @@ export default function App() {
 
   async function reviewCode() {
     try {
+      setModelUsed("");
       const defaultCode = ` function sum() {
   return 1 + 1
 }`;
@@ -108,10 +111,13 @@ export default function App() {
 
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/ai/get-review`,
-        { code: code },
+        { code: code, model: selectedModel },
         { headers }
       );
       setReview(response.data.review);
+      if (response.data.modelUsed) {
+        setModelUsed(response.data.modelUsed);
+      }
 
       // Update user credits in state only if not default code and credits were deducted
       if (!isDefaultCode && user && response.data.creditsRemaining !== undefined) {
@@ -181,6 +187,19 @@ export default function App() {
                   />
                 </div>
                 <div className="credits-section">
+                  <div className="model-selector-container">
+                    <label htmlFor="model-select">Model: </label>
+                    <select
+                      id="model-select"
+                      value={selectedModel}
+                      onChange={(e) => setSelectedModel(e.target.value)}
+                      className="model-select"
+                    >
+                      <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                      <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                      <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                    </select>
+                  </div>
                   <span className="credits-count">
                     Credits: {user ? user.credits : 'Demo'}
                   </span>
@@ -200,7 +219,14 @@ export default function App() {
                   </>
                 ) : (
                   <>
-                    <h2>Code Review</h2>
+                    <div className="review-header">
+                      <h2>Code Review</h2>
+                      {modelUsed && (
+                        <span className="model-badge">
+                          {modelUsed}
+                        </span>
+                      )}
+                    </div>
                     <Typewriter
                       text={review}
                       speed={50}
