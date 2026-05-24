@@ -1,16 +1,8 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config();
 
-// Default API Key provided by user
-const DEFAULT_API_KEY = "AIzaSyAYy02CQ2z6nrwErxmTCG4QVnnRs0IYUS0";
-
 const getApiKey = () => {
-  const envKey = process.env.GOOGLE_API_KEY;
-  // If envKey is not set, or is the old/invalid placeholder, use the new default key
-  if (!envKey || envKey === "AIzaSyAxrgW4PckJzAs3B0ZfKleOVB1OlHBtpYM") {
-    return DEFAULT_API_KEY;
-  }
-  return envKey;
+  return process.env.GOOGLE_API_KEY;
 };
 
 async function generateCodeReview(prompt, requestedModel = null) {
