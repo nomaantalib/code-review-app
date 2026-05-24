@@ -3,7 +3,11 @@ const User = require("../models/User");
 
 module.exports = async (req, res) => {
   try {
-    const { code } = req.body;
+    const { code, model } = req.body;
+
+    if (!code) {
+      return res.status(400).json({ message: "Code is required" });
+    }
 
     // Check if this is the default example code - allow anonymous access
     const defaultCode = ` function sum() {
@@ -44,7 +48,7 @@ ${code}
         req.user ? "user " + req.user._id : "anonymous user"
       }`
     );
-    const review = await generateCodeReview(prompt);
+    const { review, modelUsed } = await generateCodeReview(prompt, model);
 
     // Check if this is the default example code - don't deduct credits for demo
     // defaultCode and isDefaultCode are already declared above
@@ -70,6 +74,7 @@ ${code}
     res.json({
       review,
       creditsRemaining,
+      modelUsed,
     });
   } catch (error) {
     console.error("Error in AI controller:", error);
