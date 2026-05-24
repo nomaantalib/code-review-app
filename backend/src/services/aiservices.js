@@ -14,6 +14,8 @@ async function generateCodeReview(prompt, requestedModel = null) {
 
   // List of fallback models in priority order
   const fallbackModels = [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
     "gemini-2.0-flash",
     "gemini-1.5-flash",
     "gemini-1.5-pro"
